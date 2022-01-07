@@ -22,7 +22,8 @@ const Login = function ({settoken}) {
         })
         .catch(function (error) {
             // handle error
-            console.log(error);
+            alert('username or password not correct')
+            console.log('error:', error);
         })
 
     }

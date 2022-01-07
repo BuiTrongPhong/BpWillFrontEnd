@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function App() {
     const [profile, setprofile] = useState()
+
     useEffect(() => {
         axios.get('http://localhost:3001/user/profile', {
             headers: { 'Authorization': localStorage.getItem('token') }
@@ -19,7 +20,6 @@ function App() {
     }, [])
 
     const { token, settoken } = useToken()
-
     function PrivateRoute({ children }) {
         return token ? children : <Login settoken={settoken}></Login>
     }

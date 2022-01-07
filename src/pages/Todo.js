@@ -1,22 +1,14 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import FromUpdate from "../components/FormUpdate"
+import FormAdd from "../components/FormAdd"
+
 const Todo = function () {
-    const [job, setjob] = useState('')
     const [jobData, setjobData] = useState('')
     const [jobs, setjobs] = useState([])
-    const [confirmLog, setconfirmLog] = useState(false)
-    const handleAddJob = () => {
-        axios.post('http://localhost:3001/todo/add', { name: job }, {
-            headers: { 'Authorization': localStorage.getItem('token') }
-        })
-            .then(res => {
-                console.log('res add todo', res)
-                // setjob('')   
-                getList()
-            })
+    const [isEdit, setisEdit] = useState(false)
+    const [isAdd, setisAdd] = useState(false)
 
-    }
     const handleDeleteTodo = (jobData) => {
         let a = window.confirm('delete')
         if (a) {
@@ -29,25 +21,16 @@ const Todo = function () {
         }
     }
     const handleOnOffEdit = () => {
-        setconfirmLog(!confirmLog)
+        setisEdit(!isEdit)
+    }
+    const handleOnOffAdd = () => {
+        setisAdd(!isAdd)
     }
     const handleEditTodo = (jobData) => {
         handleOnOffEdit()
         // setjobData(jobData)
     }
-    function handleUpdateTodo(jobEdit, jobData) {
-        console.log('jobData', jobData)
-        console.log('jobEdit', jobEdit)
-        axios.put(`http://localhost:3001/todo/${jobData._id}/updatetodo`, {
-            name: jobEdit
-        })
-            .then(res => {
-                console.log('res update', res)
-                handleOnOffEdit()
-                getList()
-            })
-
-    }
+    
     const getList = () => {
         axios.get('http://localhost:3001/todo/getall', {
             headers: {
@@ -67,10 +50,7 @@ const Todo = function () {
     return (
         <>
             <div className='mt-6'>
-                <input value={job} onChange={(e) =>
-                    setjob(e.target.value)
-                } className='border mr-3 px-2'></input>
-                <button onClick={handleAddJob} className='bg-blue-300  rounded px-1'>Add</button>
+                <button onClick={handleOnOffAdd}  className='bg-blue-300  rounded px-1'>Add</button>
             </div>
             <div>
                 <ul>
@@ -80,6 +60,8 @@ const Todo = function () {
                                 <div className="flex justify-between">
                                     <div className="mr-4 self-end">.</div>
                                     <div className="flex-grow self-end">{jobData.name}</div>
+                                    <div className="flex-grow self-end">{new Date(jobData.startDate).toISOString().substring(0,10)}</div>
+                                    <div className="flex-grow self-end">{new Date(jobData.endDate).toISOString().substring(0,10)}</div>
                                     <div><button onClick={() => {
                                         setjobData(jobData)
                                         handleEditTodo(jobData)
@@ -92,8 +74,11 @@ const Todo = function () {
                 </ul>
             </div>
             
-            {confirmLog && <FromUpdate handleUpdateTodo={handleUpdateTodo} handleOnOffEdit={handleOnOffEdit} jobData={jobData}></FromUpdate>}
-            {confirmLog && <div onClick={handleOnOffEdit} className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-25"></div>}
+            {isEdit && <FromUpdate getList={getList} handleOnOffEdit={handleOnOffEdit} jobData={jobData}></FromUpdate>}
+            {isEdit && <div onClick={handleOnOffEdit} className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-25"></div>}
+            {isAdd && <FormAdd getList={getList} handleOnOffAdd={handleOnOffAdd}></FormAdd>}
+            {isAdd && <div onClick={handleOnOffAdd} className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-25"></div>}
+            
         </>
     )
 }

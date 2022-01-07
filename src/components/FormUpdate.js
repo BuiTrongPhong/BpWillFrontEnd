@@ -1,26 +1,42 @@
-// import axios from "axios"
+import axios from "axios"
 import { useState } from "react"
-function FromUpdate({ handleOnOffEdit, handleUpdateTodo, jobData }) {
-    const [jobEdit, setjobEdit] = useState(jobData.name)
+function FromUpdate({ handleOnOffEdit,getList, jobData }) {
+
+    const [job, setjob] = useState(jobData.name)
+    const [startDate, setstartDate] = useState(jobData.startDate)
+    const [endDate, setendDate] = useState(jobData.endDate)
+    function handleUpdateTodo(e, jobData) {
+        e.preventDefault()
+        console.log(jobData)
+        axios.put(`http://localhost:3001/todo/${jobData._id}/updatetodo`, {
+            name: job,
+            startDate,
+            endDate
+        })
+            .then(res => {
+                console.log('res update', res)
+                handleOnOffEdit()
+                getList()
+            })
+
+    }
     return (
-        <div className="z-10 fixed top-44 left-1/3 border rounded w-80 h-40 mx-auto bg-gray-50 p-4">
-            <div className="flex justify-end">
-                <button onClick={handleOnOffEdit} className="px-2">x</button>
+        <>
+            <div className="bg-blue-300 w-80 h-80 p-2 z-10 fixed top top-1/3 right-1/2">
+                <form onSubmit={e=> handleUpdateTodo(e, jobData)}>
+                    <label>Job</label>
+                    <input value={job} onChange={e => setjob(e.target.value)} className="border rounded w-full" placeholder="input todo" />
+                    <label>Start Date</label>
+                    <input value={new Date(startDate).toISOString().substring(0,10)}onChange={e => setstartDate(e.target.value)} type='date' className="border rounded w-full" placeholder="input start date" />
+                    <label>End Date</label>
+                    <input value={new Date(endDate).toISOString().substring(0,10)} onChange={e => setendDate(e.target.value)} type='date' className="border rounded w-full" placeholder="input end date" />
+                    <div className="absolute bottom-2 right-2">
+                        <button onClick={handleOnOffEdit} className="p-1 border rounded bg-red-300 mr-2">Cancel</button>
+                        <button className="p-1 border rounded bg-red-300">Update</button>
+                    </div>
+                </form>
             </div>
-            <div className="">
-                <div className="flex">
-                    <label className="px-1">Name</label>
-                    <textarea value={jobEdit} onChange={(e) => setjobEdit(e.target.value)} className="mx-1 px-1 border"></textarea>
-                </div>
-                <div className="absolute bottom-4 right-4">
-                    <button onClick={() => {
-                        handleUpdateTodo(jobEdit, jobData)
-                    }
-                    }
-                        className="mx-1 px-1 bg-blue-500 rounded place-items-end">Update</button>
-                </div>
-            </div>
-        </div>
+        </>
     )
 }
 export default FromUpdate
