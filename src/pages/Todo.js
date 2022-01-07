@@ -16,7 +16,7 @@ const Todo = function () {
                 .then(res => {
                     console.log('res delete', res)
                     getList()
-                    
+
                 })
         }
     }
@@ -30,7 +30,7 @@ const Todo = function () {
         handleOnOffEdit()
         // setjobData(jobData)
     }
-    
+
     const getList = () => {
         axios.get('http://localhost:3001/todo/getall', {
             headers: {
@@ -46,39 +46,47 @@ const Todo = function () {
     useEffect(() => {
         getList()
     }, [])
-    
+
     return (
         <>
-            <div className='mt-6'>
-                <button onClick={handleOnOffAdd}  className='bg-blue-300  rounded px-1'>Add</button>
+            <div className='my-6 float-right'>
+                <button onClick={handleOnOffAdd} className='bg-blue-300  rounded px-1'>Add</button>
             </div>
             <div>
-                <ul>
-                    {
-                        jobs.map((jobData, index) => (
-                            <li key={index} className="border-b px-2">
-                                <div className="flex justify-between">
-                                    <div className="mr-4 self-end">.</div>
-                                    <div className="flex-grow self-end">{jobData.name}</div>
-                                    <div className="flex-grow self-end">{new Date(jobData.startDate).toISOString().substring(0,10)}</div>
-                                    <div className="flex-grow self-end">{new Date(jobData.endDate).toISOString().substring(0,10)}</div>
-                                    <div><button onClick={() => {
+                <table className="table-auto border-collapse border w-full">
+                    <thead>
+                        <tr className="">
+                            <th className="border px-2 w-52">Job</th>
+                            <th className="border px-2">Start date</th>
+                            <th className="border px-2">End date</th>
+                            <th className="border px-2">Edit</th>
+                            <th className="border px-2">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            jobs.map((jobData, index) => (
+                                <tr key={index} >
+                                    <td className="border px-2">{jobData.name}</td>
+                                    <td className="border px-2">{new Date(jobData.startDate).toISOString().substring(0, 10)}</td>
+                                    <td className="border px-2">{new Date(jobData.endDate).toISOString().substring(0, 10)}</td>
+                                    <td className="border px-2 text-center"><button onClick={() => {
                                         setjobData(jobData)
                                         handleEditTodo(jobData)
-                                        }} className="mx-8 p-1 bg-blue-300 m-1 rounded hover:bg-blue-600">Edit</button></div>
-                                    <div><button onClick={() => handleDeleteTodo(jobData)} className="mx-8 p-1 bg-red-300 m-1 rounded hover:bg-red-600">Delete</button></div>
-                                </div>
-                            </li>
-                        ))
-                    }
-                </ul>
+                                    }} className="p-1 bg-blue-300 m-1 rounded hover:bg-blue-600">Edit</button></td>
+                                    <td className="border px-2 text-center"><button onClick={() => handleDeleteTodo(jobData)} className="p-1 bg-red-300 m-1 rounded hover:bg-red-600">Delete</button></td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
             </div>
-            
+
             {isEdit && <FromUpdate getList={getList} handleOnOffEdit={handleOnOffEdit} jobData={jobData}></FromUpdate>}
             {isEdit && <div onClick={handleOnOffEdit} className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-25"></div>}
             {isAdd && <FormAdd getList={getList} handleOnOffAdd={handleOnOffAdd}></FormAdd>}
             {isAdd && <div onClick={handleOnOffAdd} className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-25"></div>}
-            
+
         </>
     )
 }
